@@ -1,0 +1,12 @@
+version: "3.1"
+
+services:
+
+  realtimeresults:
+    image: realtimeresults
+    build: Container
+    container_name: realtimeresults1
+    hostname: realtimeresults
+    ports:
+     - "80:80"
+

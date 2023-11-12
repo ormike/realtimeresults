@@ -1,0 +1,25 @@
+{
+  "name": "realtimeresults",
+  "version": "1.0.0",
+  "description": "Web app to upload and share an html document",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "author": "mwb",
+  "license": "ISC",
+  "devDependencies": {
+    "file-loader": "^6.2.0",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "errorhandler": "^1.5.1",
+    "express": "^4.18.2",
+    "express-partials": "^0.3.0"
+  }
+}
