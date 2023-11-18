@@ -99,12 +99,14 @@ WORKDIR /
 #======================================================================
 COPY ./files /tmp
 
-RUN cp /tmp/nginx.conf /usr/local/nginx/conf/nginx.conf && \
-    cp /tmp/form.html /usr/local/nginx/html
-
+#======================================================================
+# Configure nginx
+#======================================================================
 RUN mkdir /etc/runit/runsvdir/default/nginx && \
-  cp /tmp/nginx.sh /etc/runit/runsvdir/default/nginx/run && \
-  chmod 755 /etc/runit/runsvdir/default/nginx/run
+    cp /tmp/nginx.sh /etc/runit/runsvdir/default/nginx/run && \
+    chmod 755 /etc/runit/runsvdir/default/nginx/run && \
+    rm /usr/local/nginx/conf/nginx.conf && \
+    ln -s /home/app/realtimeresults/nginx.conf /usr/local/nginx/conf/nginx.conf
 
 #======================================================================
 # Create users
@@ -150,12 +152,13 @@ RUN cd /home/app/realtimeresults && \
     npm install
 
 #======================================================================
-# Install the rest of the web app
+# Install the rest of the web app including nginx.conf
 #======================================================================
 
 COPY --chown=app:app ./realtimeresults /home/app/realtimeresults
 
 USER root
+
 #======================================================================
 # Use baseimage's init system.
 #======================================================================
