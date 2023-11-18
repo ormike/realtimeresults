@@ -71,8 +71,7 @@ RUN cd /tmp && \
     rmdir /usr/local/ssl/certs && \
     ln -s /etc/ssl/certs /usr/local/ssl/certs
 
-ENV NGINX_VERSION nginx-1.24.0
-ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV TERM=xterm-256color NGINX_VERSION=nginx-1.24.0 LD_LIBRARY_PATH=/usr/local/lib
 
 # #======================================================================
 # # Install additional packages
@@ -98,7 +97,7 @@ WORKDIR /
 #======================================================================
 # Add files to /tmp
 #======================================================================
-ADD ./files /tmp
+COPY ./files /tmp
 
 RUN cp /tmp/nginx.conf /usr/local/nginx/conf/nginx.conf && \
     cp /tmp/form.html /usr/local/nginx/html
@@ -141,10 +140,20 @@ RUN \
     npm install -g n && \
     n stable
 
-USER app
+#======================================================================
+# Install NPM packages
+#======================================================================
 
+USER app
+COPY --chown=app:app ./realtimeresults/package*.json /home/app/realtimeresults/
 RUN cd /home/app/realtimeresults && \ 
     npm install
+
+#======================================================================
+# Install the rest of the web app
+#======================================================================
+
+COPY --chown=app:app ./realtimeresults /home/app/realtimeresults
 
 USER root
 #======================================================================
