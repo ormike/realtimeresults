@@ -109,10 +109,12 @@ RUN mkdir /etc/runit/runsvdir/default/nginx && \
     ln -s /home/app/realtimeresults/nginx.conf /usr/local/nginx/conf/nginx.conf
 
 #======================================================================
-# Create users
+# Create users and make the data folder
 #======================================================================
-RUN groupadd -g 1000 app \
-  && useradd --create-home --shell /bin/bash -u 1000 -g 1000 app
+RUN groupadd -g 1000 app && \
+    useradd --create-home --shell /bin/bash -u 1000 -g 1000 app && \
+    mkdir /data && \
+    chmod 777 /data
 
 RUN for username in app; do \
   adduser $username sudo \

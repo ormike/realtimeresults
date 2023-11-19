@@ -16,10 +16,8 @@ app.engine('ejs', ejs.__express);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views'));
 app.use(partials());
-// app.use(express.json({ extended: false }));        // parse JSON bodies
-app.use(express.json()); //Used to parse JSON bodies
-// app.use(express.urlencoded({ extended: false }));  // parse URL-encoded bodies
-app.use(express.urlencoded());  // parse URL-encoded bodies
+app.use(express.json({ extended: false }));        // parse JSON bodies
+app.use(express.urlencoded({ extended: false }));  // parse URL-encoded bodies
 app.use(errorHandler());
 
 var unsanitizedContent = "";
@@ -49,7 +47,7 @@ async function readFile(filename) {
 }
 
 async function rmFile(filename) {
-    await fs.rm(filename, { force: true });;
+    await fs.rm(filename, { force: true });
 }
 
 app.post('/upload', upload.none(), async function(req, res) {
@@ -59,8 +57,8 @@ app.post('/upload', upload.none(), async function(req, res) {
         if (terms.length > 1) {
             if (terms[1] == 'path') {
                 filename = req.body[key];
-                unsanitizedContent = await readFile(filename);
-                rmFile(filename)
+                unsanitizedContent = readFile(filename);
+                rmFile(filename);
                 sanitizedContent = sanitizeHtml(unsanitizedContent, {
                     allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'head', 'html', 'body', 'style', 'title', 'nobr' ]),
                     allowedAttributes: Object.assign({}, sanitizeHtml.defaults.allowedAttributes, {
