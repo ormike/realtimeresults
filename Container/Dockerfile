@@ -105,6 +105,9 @@ COPY ./files /tmp
 RUN mkdir /etc/runit/runsvdir/default/nginx && \
     cp /tmp/nginx.sh /etc/runit/runsvdir/default/nginx/run && \
     chmod 755 /etc/runit/runsvdir/default/nginx/run && \
+    mkdir /etc/runit/runsvdir/default/node && \
+    cp /tmp/node.sh /etc/runit/runsvdir/default/node/run && \
+    chmod 755 /etc/runit/runsvdir/default/node/run && \
     rm /usr/local/nginx/conf/nginx.conf && \
     ln -s /home/app/realtimeresults/nginx.conf /usr/local/nginx/conf/nginx.conf
 
@@ -158,6 +161,8 @@ RUN cd /home/app/realtimeresults && \
 #======================================================================
 
 COPY --chown=app:app ./realtimeresults /home/app/realtimeresults
+RUN cd /home/app/realtimeresults && \
+    npm run build
 
 USER root
 

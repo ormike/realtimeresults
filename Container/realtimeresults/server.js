@@ -57,8 +57,8 @@ app.post('/upload', upload.none(), async function(req, res) {
         if (terms.length > 1) {
             if (terms[1] == 'path') {
                 filename = req.body[key];
-                unsanitizedContent = readFile(filename);
-                rmFile(filename);
+                unsanitizedContent = await readFile(filename);
+                await rmFile(filename);
                 sanitizedContent = sanitizeHtml(unsanitizedContent, {
                     allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'head', 'html', 'body', 'style', 'title', 'nobr' ]),
                     allowedAttributes: Object.assign({}, sanitizeHtml.defaults.allowedAttributes, {
