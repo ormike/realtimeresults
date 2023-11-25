@@ -3,6 +3,7 @@ FROM       phusion/baseimage:focal-1.0.0
 # Expose the sshd and HTML port.
 EXPOSE 22
 EXPOSE 80
+EXPOSE 443
 
 #======================================================================
 # Enable sshd
@@ -20,7 +21,16 @@ RUN rm -rf /etc/service/sshd/down
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 
 RUN  apt-get update \
-  && apt-get install -y apt-utils \
+  && apt-get install -y apt-utils ca-certificates curl gnupg 
+
+RUN \
+     mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && NODE_MAJOR=20 \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+
+RUN  apt-get update \
+  && apt-get install -y \
     autoconf \
     automake \
     build-essential \
@@ -29,6 +39,7 @@ RUN  apt-get update \
     dnsutils \
     inetutils-ping \
     iproute2 \
+    git \
     less \
     libstdc++-8-dev \
     libssl-dev \
@@ -36,7 +47,7 @@ RUN  apt-get update \
     net-tools \
     netcat \
     nmap \
-    npm \
+    nodejs \
     rsync \
     sudo \
     traceroute \
@@ -50,7 +61,7 @@ RUN cd /tmp && \
     cd pcre2-10.42 && \
     ./configure && \
     make -j 2 && \
-    sudo make install
+    make install
 
 RUN cd /tmp && \
     wget http://zlib.net/zlib-1.3.tar.gz && \
@@ -58,7 +69,7 @@ RUN cd /tmp && \
     cd zlib-1.3 && \
     ./configure && \
     make -j 2 && \
-    sudo make install
+    make install
 
 RUN cd /tmp && \
     wget http://www.openssl.org/source/openssl-1.1.1v.tar.gz && \
@@ -66,7 +77,7 @@ RUN cd /tmp && \
     cd openssl-1.1.1v && \
     ./config && \
     make -j 2 && \
-    sudo make install && \
+    make install && \
     # point to the system certs
     rmdir /usr/local/ssl/certs && \
     ln -s /etc/ssl/certs /usr/local/ssl/certs
@@ -76,8 +87,6 @@ ENV TERM=xterm-256color NGINX_VERSION=nginx-1.24.0 LD_LIBRARY_PATH=/usr/local/li
 # #======================================================================
 # # Install additional packages
 # #======================================================================
-RUN apt-get install -y git
-
 RUN git clone https://github.com/hongzhidao/nginx-upload-module.git /tmp/build/nginx-upload-module
 
 #======================================================================
@@ -138,14 +147,6 @@ RUN \
   # inhibit interactive confirmation on first connect to new host: \
   && perl -pe 's/.*\bStrictHostKeyChecking\b.*/StrictHostKeyChecking no/;' -i /etc/ssh/ssh_config \
   && echo "%sudo  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/sudogroup
-
-#======================================================================
-# Install the latest stable nodejs
-#======================================================================
-
-RUN \ 
-    npm install -g n && \
-    n stable
 
 #======================================================================
 # Install NPM packages
