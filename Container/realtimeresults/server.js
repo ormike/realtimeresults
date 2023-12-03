@@ -37,44 +37,20 @@ app.get('/', function(req, res) {
 //     res.send(unsanitizedContent);
 // });
 
-async function readFile(filename) {
-    try {
-        var content = await fs.readFile(filename, { encoding: 'utf8' });
-    } catch (err) {
-        console.log(err);
-    }
-    return content;
-}
-
-async function rmFile(filename) {
-    await fs.rm(filename, { force: true });
-}
-
-app.post('/upload', upload.none(), async function(req, res) {
-    let filename = "";
-    for (var key in req.body) {
-        let terms = key.split('.');
-        if (terms.length > 1) {
-            if (terms[1] == 'path') {
-                filename = req.body[key];
-                unsanitizedContent = await readFile(filename);
-                await rmFile(filename);
-                sanitizedContent = sanitizeHtml(unsanitizedContent, {
-                    allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'head', 'html', 'body', 'style', 'title', 'nobr' ]),
-                    allowedAttributes: Object.assign({}, sanitizeHtml.defaults.allowedAttributes, {
-                        style: ['type'],
-                        table: ['width', 'style'],
-                        td: ['width', 'id', 'style'],
-                        th: ['id'],
-                        tr: ['id'],
-                        col: ['width'],
-                        div: ['id']
-                    })
-                });
-                break;
-            }
-        }
-    }
+app.post('/upload', upload.single('file6'), async function(req, res) {
+    unsanitizedContent = Buffer.from(req.file.buffer, '7bit').toString('utf-8');
+    sanitizedContent = sanitizeHtml(unsanitizedContent, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'head', 'html', 'body', 'style', 'title', 'nobr' ]),
+        allowedAttributes: Object.assign({}, sanitizeHtml.defaults.allowedAttributes, {
+            style: ['type'],
+            table: ['width', 'style'],
+            td: ['width', 'id', 'style'],
+            th: ['id'],
+            tr: ['id'],
+            col: ['width'],
+            div: ['id']
+        })
+    });
 
     res.set('Content-Type', 'text/html');
     res.send("Upload succeeded<br><br>Go back one page to return to upload form");
