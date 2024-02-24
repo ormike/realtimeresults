@@ -1,5 +1,6 @@
 #! /bin/bash
 
+# you already did this to get this file
 # git clone https://github.com/ormike/realtimeresults.git
 
 # install docker-ce
@@ -14,8 +15,26 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin 
 sudo groupadd docker
 sudo usermod -aG docker $USER
 
-# log out
-# scp -r -i ~/.ssh/pq3.pem letsencrypt/ ubuntu@34.210.212.45:realtimeresults
-# log back in
+# next log out and copy in the server certificate
+#
+# scp -i ~/.ssh/pq3.pem letsencrypt.tar.gz ubuntu@34.210.212.45:realtimeresults
+#
+# log back in, untar the server certificate files, and build the container
+# 
 # cd realtimeresults
+# tar -xzvf letsencrypt.tar.gz
 # docker-compose up --build -d
+
+# here are the commands to renew the certificate
+#
+# enter the realtimeresults container
+# docker exec -it -u app realtimeresults1 bash
+#
+# then either
+# apt update
+# apt install certbot python3-certbot-nginx
+# or
+# /home/app/certbot_install.sh
+# then 
+# certbot renew --nginx-ctl /usr/sbin/nginx --nginx-server-root /etc/nginx --dry-run
+
